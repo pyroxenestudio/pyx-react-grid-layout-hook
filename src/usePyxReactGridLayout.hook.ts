@@ -2,7 +2,15 @@ import React from "react";
 
 const usePyxReactGridLayout = (options: any) => {
   const loggerName = '[usePyxReactGridLayout] ';
-  const { height, items, col, rows, breakpoints, breakpointsCol } = options;
+  const {
+    height,
+    items,
+    col,
+    rows,
+    breakpoints,
+    breakpointsCol,
+    skipInit = false
+  } = options;
   // STATES
   const [layout, setLayout] = React.useState(options.layout ?? undefined);
   const [hiddenItems, setHiddenItems] = React.useState(options.hiddenItems ?? []);
@@ -79,8 +87,7 @@ const usePyxReactGridLayout = (options: any) => {
       y: Math.floor((position / tempRows)) * height,
       w: sizeItem,
       h: height,
-      i: name,
-      z: 0
+      i: name
     }
   }
 
@@ -122,7 +129,6 @@ const usePyxReactGridLayout = (options: any) => {
     const draftLayout = layout.slice();
     draftLayout[index].z += 1;
     sortByZ(draftLayout);
-    debugger;
     setLayout(draftLayout);
   }
 
@@ -133,7 +139,6 @@ const usePyxReactGridLayout = (options: any) => {
       draftLayout[index].z = 0;
     }
     sortByZ(draftLayout);
-    debugger;
     setLayout(draftLayout);
   }
 
@@ -149,21 +154,6 @@ const usePyxReactGridLayout = (options: any) => {
       draftLayout.push(item);
       setLayout(draftLayout);
     }
-  }
-
-  const trySetUpdate = (newLayout: any) => {
-    if (breakpoints) {
-      Object.keys(newLayout).forEach((bp) => {
-        newLayout[bp].forEach((item: any, index: number) => {
-          item.z = layout[bp][index].z;
-        });
-      });
-    } else {
-      newLayout.forEach((item: any, index: number) => {
-        item.z = layout[index].z;
-      });
-    }
-    setLayout(newLayout);
   }
 
   const checkErrors = () => {
@@ -186,15 +176,34 @@ const usePyxReactGridLayout = (options: any) => {
     return ok;
   }
 
+  /**
+   * Insert an already created layout
+   * @param layout The layout
+   * @param items an array with the names
+   */
+  const insertLayout = (layout: any, items: any) => {
+    if (layout && items) {
+      let flatLayout: any = [];
+      if (breakpoints) {
+        const breakpoint = Object.keys(layout)[0]
+        flatLayout = layout[breakpoint].map((item: any) => item.i);
+      } else {
+        flatLayout = layout.map((item: any) => items.i);
+      }
+      const draftHiddenItems = items.filter((item: any) => flatLayout.indexOf(item) === -1);
+      setHiddenItems(draftHiddenItems);
+      setLayout(layout);
+    }
+  }
+
   // INIT
   React.useEffect(() => {
-    if (checkErrors()) {
-      if (!layout?.length) {
-        if (breakpoints) {
-          createResponsiveLayout();
-        } else {
-          createLayout();
-        }
+    if (!checkErrors()) return;
+    if (!layout?.length && !skipInit) {
+      if (breakpoints) {
+        createResponsiveLayout();
+      } else {
+        createLayout();
       }
     }
   }, []);
@@ -203,25 +212,22 @@ const usePyxReactGridLayout = (options: any) => {
     console.log('LAYOUT IS UPDATED', layout);
   }, [layout]);
 
-  return React.useMemo((): any => {
-    return {
-      layout,
-      currentBreakpoint,
-      hiddenItems,
-      addItem,
-      getLastItem,
-      updateLayout: trySetUpdate,
-      hideItem,
-      showHiddenItem,
-      resetLayout,
-      setBreakpoint: setCurrentBreakpoint,
-      setFirst,
-      zIndexUp,
-      zIndexDown
-    }
-  }, [layout]);
-
-  return 
+  return {
+    layout,
+    currentBreakpoint,
+    hiddenItems,
+    addItem,
+    getLastItem,
+    updateLayout: setLayout,
+    hideItem,
+    showHiddenItem,
+    resetLayout,
+    setBreakpoint: setCurrentBreakpoint,
+    setFirst,
+    zIndexUp,
+    zIndexDown,
+    insertLayout
+  }
 }
 
 export default usePyxReactGridLayout;

@@ -1,0 +1,24 @@
+{
+  "name": "pyx-react-grid-layout-hook",
+  "version": "0.0.1",
+  "description": "A hook for use the library React Grid Layout",
+  "main": "dist/usePyxReactGridLayout.hook.cjs",
+  "module": "dist/usePyxReactGridLayout.hook.js",
+  "types": "dist/@types/usePyxReactGridLayout.hook.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rollup --config",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.7",
+    "@rollup/plugin-typescript": "^10.0.1",
+    "@types/react": "^18.0.26",
+    "babel-loader": "^8.3.0",
+    "rollup": "^3.9.0",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.4"
+  },
+  "author": "Pyroxene Studio",
+  "license": "MIT"
+}

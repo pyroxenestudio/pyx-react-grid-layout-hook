@@ -1,10 +1,9 @@
 import React from "react";
 
-const usePyxReactGridLayout = (options: any) => {
+const usePyxReactGridLayoutResponsive = (options: any) => {
   const loggerName = '[usePyxReactGridLayout] ';
   const {
     height,
-    items,
     col,
     rows,
     breakpoints,
@@ -14,6 +13,7 @@ const usePyxReactGridLayout = (options: any) => {
   // STATES
   const [layout, setLayout] = React.useState(options.layout ?? undefined);
   const [hiddenItems, setHiddenItems] = React.useState(options.hiddenItems ?? []);
+  const [items, setItems] = React.useState(options.items ?? []);
   const [currentBreakpoint, setCurrentBreakpoint] = React.useState<string>('lg');
 
   const getLastItem = () => {
@@ -196,6 +196,12 @@ const usePyxReactGridLayout = (options: any) => {
     }
   }
 
+  const insertItems = (items: any) => {
+    if (items?.length) {
+      setItems(items);
+    }
+  }
+
   // INIT
   React.useEffect(() => {
     if (!checkErrors()) return;
@@ -208,9 +214,32 @@ const usePyxReactGridLayout = (options: any) => {
     }
   }, []);
 
+  // INIT with new items
   React.useEffect(() => {
-    console.log('LAYOUT IS UPDATED', layout);
-  }, [layout]);
+    if (breakpoints) {
+      createResponsiveLayout();
+    } else {
+      createLayout();
+    }
+  }, [items]);
+
+  // {
+  //   layout,
+  //   items: {
+  //     addItem,
+  //     hideItems,
+  //     getLastItem,
+  //     showHiddenItem,
+  //     hiddenItems,
+  //   },
+  //   resetLayout,
+  //   updateLayout,
+  //   breakpoints: {
+      
+  //   }
+
+
+  // }
 
   return {
     layout,
@@ -226,8 +255,9 @@ const usePyxReactGridLayout = (options: any) => {
     setFirst,
     zIndexUp,
     zIndexDown,
-    insertLayout
+    insertLayout,
+    insertItems
   }
 }
 
-export default usePyxReactGridLayout;
+export default usePyxReactGridLayoutResponsive;
